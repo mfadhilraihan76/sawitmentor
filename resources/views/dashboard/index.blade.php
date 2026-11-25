@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - SawitEdu</title>
+    <title>Dashboard - SawitMentor</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 </head>
 <body class="bg-gray-50 p-6">
@@ -12,7 +12,7 @@
         <!-- Header & Menu -->
         <div class="bg-white p-6 rounded-lg shadow flex flex-col md:flex-row justify-between items-center gap-4">
             <div>
-                <h1 class="text-2xl font-bold text-gray-800">Dashboard SawitEdu</h1>
+                <h1 class="text-2xl font-bold text-gray-800">Dashboard SawitMentor</h1>
                 <p class="text-sm text-gray-500">{{ now()->translatedFormat('l, d F Y') }}</p>
             </div>
             <div class="flex flex-wrap gap-2 text-sm font-medium">

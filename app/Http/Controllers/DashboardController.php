@@ -6,10 +6,11 @@ use App\Models\Kebun;
 use App\Models\Panen;
 use App\Models\Petani;
 use Illuminate\Support\Facades\DB;
+use Illuminate\View\View;
 
 class DashboardController extends Controller
 {
-    public function index()
+    public function index(): View
     {
         $totalPanen      = Panen::sum('berat_kg');
         $totalPendapatan = Panen::sum('total_pendapatan');
@@ -26,6 +27,7 @@ class DashboardController extends Controller
                 DB::raw("$formatBulan as bulan"),
                 DB::raw('SUM(berat_kg) as total')
             )
+            ->whereNotNull('tanggal_panen')
             ->groupBy('bulan')
             ->orderByDesc('bulan')
             ->limit(12)
@@ -39,7 +41,12 @@ class DashboardController extends Controller
             ->get();
 
         return view('dashboard.index', compact(
-            'totalPanen', 'totalPendapatan', 'jumlahPetani', 'jumlahKebun', 'perBulan', 'panenTerbaru'
+            'totalPanen',
+            'totalPendapatan',
+            'jumlahPetani',
+            'jumlahKebun',
+            'perBulan',
+            'panenTerbaru'
         ));
     }
 }
