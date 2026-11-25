@@ -1,0 +1,37 @@
+<?php
+
+use App\Http\Controllers\AdminDashboardController;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\PetaniDashboardController;
+use App\Http\Middleware\RoleMiddleware;
+use Illuminate\Support\Facades\Route;
+
+Route::get('/', fn() => redirect()->route('login'));
+
+Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
+Route::post('/login', [AuthController::class, 'login'])->name('login.proses');
+Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
+Route::post('/register', [AuthController::class, 'register'])->name('register.proses');
+Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth')->name('logout');
+
+// /dashboard lama diarahkan sesuai role
+Route::get('/dashboard', fn() => redirect(AuthController::home(auth()->user())))
+    ->middleware('auth')->name('dashboard');
+
+// ===== Admin =====
+Route::middleware(['auth', RoleMiddleware::class . ':admin'])->group(function () {
+    Route::get('/admin/dashboard', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
+
+    // CRUD lama: hanya didaftarkan kalau controllernya ada
+    foreach (['petani' => 'PetaniController', 'kebun' => 'KebunController', 'panen' => 'PanenController', 'harga-tbs' => 'HargaTbsController'] as $uri => $ctrl) {
+        $kelas = "App\\Http\\Controllers\\$ctrl";
+        if (class_exists($kelas)) {
+            Route::resource($uri, $kelas);
+        }
+    }
+});
+
+// ===== Petani =====
+Route::middleware(['auth', RoleMiddleware::class . ':petani'])->group(function () {
+    Route::get('/petani/dashboard', [PetaniDashboardController::class, 'index'])->name('petani.dashboard');
+});

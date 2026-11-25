@@ -1,0 +1,3 @@
+<a class="nav-link {{ request()->routeIs('petani.dashboard') ? 'active' : '' }}" href="{{ route('petani.dashboard') }}"><i class="bi bi-speedometer2"></i> Dashboard saya</a>
+<a class="nav-link {{ request()->routeIs('petani.kebun') ? 'active' : '' }}" href="{{ route('petani.kebun') }}"><i class="bi bi-flower1"></i> Kebun dan riwayat</a>
+<a class="nav-link {{ request()->routeIs('petani.laporan') ? 'active' : '' }}" href="{{ route('petani.laporan') }}"><i class="bi bi-file-earmark-text"></i> Laporan saya</a>
