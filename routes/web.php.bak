@@ -1,0 +1,33 @@
+<?php
+
+use App\Http\Controllers\AuthController;
+use Illuminate\Support\Facades\Route;
+
+Route::get('/', fn () => redirect()->route('login'));
+
+Route::middleware('guest')->group(function () {
+    Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
+    Route::post('/login', [AuthController::class, 'login']);
+    Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
+    Route::post('/register', [AuthController::class, 'register']);
+});
+
+Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth')->name('logout');
+
+// ADMIN
+Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
+    Route::get('/dashboard', fn () => view('dashboard'))->name('admin.dashboard');
+    // TODO: pindahkan route petani/kebun/panen/harga TBS lama (lihat routes/web.php.bak) ke sini
+});
+
+// PETANI
+Route::middleware(['auth', 'role:petani'])->prefix('petani')->group(function () {
+    Route::get('/dashboard', fn () => view('dashboard.petani'))->name('petani.dashboard');
+});
+Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
+    Route::get('/dashboard', [\App\Http\Controllers\AdminDashboardController::class, 'index'])->name('admin.dashboard');
+});
+
+Route::middleware(['auth', 'role:petani'])->prefix('petani')->group(function () {
+    Route::get('/dashboard', [\App\Http\Controllers\PetaniDashboardController::class, 'index'])->name('petani.dashboard');
+});

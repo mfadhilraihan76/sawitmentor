@@ -1,0 +1,37 @@
+<?php
+
+use App\Http\Controllers\AdminDashboardController;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\PetaniDashboardController;
+use App\Http\Middleware\RoleMiddleware;
+use Illuminate\Support\Facades\Route;
+
+Route::get('/', fn() => redirect()->route('login'));
+
+Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
+Route::post('/login', [AuthController::class, 'login'])->name('login.proses');
+Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
+Route::post('/register', [AuthController::class, 'register'])->name('register.proses');
+Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth')->name('logout');
+
+Route::get('/dashboard', fn() => redirect(strtolower(trim((string) auth()->user()->role)) === 'admin' ? route('admin.dashboard') : route('petani.dashboard')))
+    ->middleware('auth')->name('dashboard');
+
+// ===== Admin =====
+Route::middleware(['auth', RoleMiddleware::class . ':admin'])->group(function () {
+    Route::get('/admin/dashboard', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
+
+    foreach (['petani' => 'PetaniController', 'kebun' => 'KebunController', 'panen' => 'PanenController', 'harga-tbs' => 'HargaTbsController'] as $uri => $ctrl) {
+        $kelas = "App\\Http\\Controllers\\$ctrl";
+        if (class_exists($kelas)) {
+            Route::resource($uri, $kelas);
+        }
+    }
+});
+
+// ===== Petani =====
+Route::middleware(['auth', RoleMiddleware::class . ':petani'])->prefix('petani')->group(function () {
+    Route::get('/dashboard', [PetaniDashboardController::class, 'index'])->name('petani.dashboard');
+    Route::get('/kebun', [PetaniDashboardController::class, 'kebun'])->name('petani.kebun');
+    Route::get('/laporan', [PetaniDashboardController::class, 'laporan'])->name('petani.laporan');
+});
