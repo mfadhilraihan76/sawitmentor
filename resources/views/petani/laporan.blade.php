@@ -1,4 +1,4 @@
-@extends('layouts.sawit')
+@extends('layouts.sawit_top')
 @section('title', 'Laporan Saya')
 @section('warna', '#1f8f4e')
 

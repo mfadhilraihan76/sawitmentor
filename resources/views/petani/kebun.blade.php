@@ -1,4 +1,4 @@
-@extends('layouts.sawit')
+@extends('layouts.sawit_top')
 @section('title', 'Kebun dan Riwayat')
 @section('warna', '#1f8f4e')
 
@@ -7,6 +7,7 @@
 @endsection
 
 @section('content')
+@include('petani._flash')
 <div class="kartu p-4 mb-4">
     <h4 class="mb-1">Kebun dan Riwayat</h4>
     <div class="text-muted">Berat, harga, dan pendapatan dari setiap kebun milik Anda</div>

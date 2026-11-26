@@ -14,6 +14,7 @@ class Panen extends Model
 
     protected $fillable = [
         'kebun_id',
+        'harga_tbs_id',
         'berat_kg',
         'total_pendapatan',
         'tanggal_panen',
@@ -31,5 +32,10 @@ class Panen extends Model
     public function kebun(): BelongsTo
     {
         return $this->belongsTo(Kebun::class, 'kebun_id');
+    }
+
+    public function hargaTbs(): BelongsTo
+    {
+        return $this->belongsTo(HargaTbs::class, 'harga_tbs_id');
     }
 }

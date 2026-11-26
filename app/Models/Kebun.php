@@ -16,7 +16,7 @@ class Kebun extends Model
     protected $fillable = [
         'petani_id',
         'nama_kebun',
-        'luas_hektar',
+        'luas_lahan',
         'lokasi',
     ];
 

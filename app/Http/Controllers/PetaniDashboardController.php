@@ -45,8 +45,8 @@ class PetaniDashboardController extends Controller
         $tp = (new Panen)->getTable();
 
         $q = Panen::query();
-        if ($petani && Schema::hasColumn($tp, 'petani_id')) {
-            $q->where('petani_id', $petani->id);
+        if ($petani) {
+            $q->whereIn('kebun_id', Kebun::where('petani_id', $petani->id)->pluck('id'));
         } else {
             $q->whereRaw('1 = 0');
         }
@@ -59,7 +59,7 @@ class PetaniDashboardController extends Controller
                 'tanggal' => $tgl && $p->$tgl ? Carbon::parse($p->$tgl) : null,
                 'kebun_id' => $p->kebun_id ?? null,
                 'berat' => $b,
-                'harga' => $h,
+                'harga' => $h ?: ($b > 0 ? $u / $b : 0),
                 'pendapatan' => $u,
             ];
         })->sortByDesc(fn($r) => $r['tanggal'] ? $r['tanggal']->timestamp : 0)->values();
@@ -112,10 +112,19 @@ class PetaniDashboardController extends Controller
 
         $terbaru = $panen->take(5);
         $hargaSekarang = $this->hargaSekarang();
+        $hargaSebelumnya = HargaTbs::where('periode_mulai', '<', $hargaSekarang ? $hargaSekarang->periode_mulai : today())->orderByDesc('periode_mulai')->first();
+        $perubahanHarga = ($hargaSekarang && $hargaSebelumnya) ? $hargaSekarang->harga_per_kg - $hargaSebelumnya->harga_per_kg : null;
+
+        $totalBiaya = (float) \App\Models\BiayaKebun::where('user_id', $user->id)->sum('jumlah');
+        $jadwalTerdekat = \App\Models\JadwalPerawatan::where('user_id', $user->id)->where('selesai', false)->orderBy('tanggal')->take(3)->get();
+        $daftarTips = \App\Http\Controllers\PetaniFiturController::tips();
+        $tipsHariIni = $daftarTips[now()->dayOfYear % count($daftarTips)];
 
         return view('petani.dashboard', compact(
+            'totalBiaya', 'jadwalTerdekat', 'tipsHariIni',
+            
             'user', 'petani', 'totalPanen', 'totalPendapatan', 'jumlahKebun',
-            'bulanIni', 'grafik', 'terbaru', 'hargaSekarang'
+            'bulanIni', 'grafik', 'terbaru', 'hargaSekarang', 'hargaSebelumnya', 'perubahanHarga'
         ));
     }
 
@@ -132,7 +141,7 @@ class PetaniDashboardController extends Controller
             $p = $panen->where('kebun_id', $k->id);
             return [
                 'nama' => $namaMap[$k->id],
-                'luas' => $k->luas ?? $k->luas_ha ?? null,
+                'luas' => $k->luas_lahan ?? null,
                 'berat' => $p->sum('berat'),
                 'pendapatan' => $p->sum('pendapatan'),
             ];
