@@ -1,0 +1,10 @@
+{
+  "menu": [
+    { "url": "dashboard", "name": "Dashboard", "icon": "menu-icon icon-base ri ri-home-smile-line", "slug": "dashboard" },
+    { "menuHeader": "Data Master" },
+    { "url": "petani", "name": "Petani", "icon": "menu-icon icon-base ri ri-user-line", "slug": "petani.*" },
+    { "url": "kebun", "name": "Kebun", "icon": "menu-icon icon-base ri ri-plant-line", "slug": "kebun.*" },
+    { "url": "panen", "name": "Panen", "icon": "menu-icon icon-base ri ri-leaf-line", "slug": "panen.*" },
+    { "url": "harga-tbs", "name": "Harga TBS", "icon": "menu-icon icon-base ri ri-money-dollar-circle-line", "slug": "harga-tbs.*" }
+  ]
+}
